@@ -143,7 +143,7 @@ export default function PixPayment({ total, txid, onClose }: PixPaymentProps) {
         onClick={onClose}
         style={{ width: '100%', padding: '1rem', background: '#c9a961', color: '#0a0a0a', border: 'none', fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '0.8rem', letterSpacing: '0.12em', textTransform: 'uppercase', cursor: 'pointer', borderRadius: 2 }}
       >
-        Concluir
+        Fechar
       </button>
     </div>
   );

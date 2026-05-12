@@ -75,6 +75,7 @@ export default function CheckoutModal({ onClose }: CheckoutModalProps) {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [pedidoId, setPedidoId] = useState<number | null>(null);
   const [txid, setTxid] = useState('');
+  const [submittedTotal, setSubmittedTotal] = useState<number | null>(null);
 
   const [nome, setNome] = useState('');
   const [telefone, setTelefone] = useState('');
@@ -109,6 +110,7 @@ export default function CheckoutModal({ onClose }: CheckoutModalProps) {
     return 0;
   })();
   const total = Math.max(0, subtotal - descontoPix - descontoCupom + freteValor);
+  const displayTotal = submittedTotal ?? total;
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -250,6 +252,8 @@ export default function CheckoutModal({ onClose }: CheckoutModalProps) {
 
     setPedidoId(result.pedido?.id ?? null);
     setTxid(`AG${Date.now()}`);
+    setSubmittedTotal(total);
+    clearCart();
 
     if (pagamento === 'pix') {
       setStep('pix');
@@ -262,7 +266,6 @@ export default function CheckoutModal({ onClose }: CheckoutModalProps) {
         setSubmitError('Não foi possível carregar o módulo de pagamento. Tente novamente.');
       }
     } else {
-      clearCart();
       setStep('success');
     }
   }
@@ -515,7 +518,7 @@ export default function CheckoutModal({ onClose }: CheckoutModalProps) {
         {step === 'pix' && (
           <>
             <div className={styles.body}>
-              <PixPayment total={total} txid={txid} onClose={() => { clearCart(); setStep('success'); }} />
+              <PixPayment total={displayTotal} txid={txid} onClose={onClose} />
             </div>
           </>
         )}
@@ -524,8 +527,8 @@ export default function CheckoutModal({ onClose }: CheckoutModalProps) {
           <>
             <div className={styles.body}>
               <h3 className={styles.headTitle} style={{ marginBottom: 8 }}>Pagamento com <em>Cartão</em></h3>
-              <p className={styles.headSub} style={{ marginBottom: 20 }}>Total: {fmt(total)}</p>
-              <CardPaymentSafe amount={total} mp={mpInstance} onTokenReceived={() => { clearCart(); setStep('success'); }} />
+              <p className={styles.headSub} style={{ marginBottom: 20 }}>Total: {fmt(displayTotal)}</p>
+              <CardPaymentSafe amount={displayTotal} mp={mpInstance} onTokenReceived={() => { setStep('success'); }} />
             </div>
           </>
         )}

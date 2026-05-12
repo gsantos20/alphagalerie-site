@@ -43,7 +43,7 @@ BEGIN
     INSERT INTO pedidos (
       numero, cliente_nome, cliente_whatsapp, cliente_email,
       cliente_endereco, forma_pagamento, tipo_entrega,
-      observacoes, subtotal, total, status, created_at, updated_at
+      observacoes, subtotal, total, status
     ) VALUES (
       p_numero,
       p_cliente_nome,
@@ -55,9 +55,7 @@ BEGIN
       p_observacoes,
       p_subtotal,
       p_total,
-      'pendente',
-      NOW(),
-      NOW()
+      'pendente'
     )
     RETURNING id INTO v_pedido_id;
 
@@ -68,7 +66,7 @@ BEGIN
     )
     SELECT 
       v_pedido_id,
-      (item->>'produto_id')::UUID,
+      (item->>'produto_id')::BIGINT,
       item->>'produto_nome',
       item->>'produto_codigo',
       (item->>'quantidade')::INTEGER,
@@ -77,7 +75,7 @@ BEGIN
       CASE 
         WHEN item->>'variacao_id' = 'null' OR item->>'variacao_id' = '' 
         THEN NULL 
-        ELSE (item->>'variacao_id')::UUID 
+        ELSE (item->>'variacao_id')::BIGINT 
       END,
       NOW()
     FROM jsonb_array_elements(p_itens) AS item
